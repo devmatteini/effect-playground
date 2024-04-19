@@ -6,25 +6,28 @@ settings:
 
 dependencies:
   '@effect/cli':
-    specifier: 0.36.0
-    version: 0.36.0(@effect/platform@0.49.0)(@effect/printer-ansi@0.33.0)(@effect/printer@0.33.0)(@effect/schema@0.66.0)(effect@3.0.0)
+    specifier: 0.36.5
+    version: 0.36.5(@effect/platform@0.50.0)(@effect/printer-ansi@0.33.3)(@effect/printer@0.33.3)(@effect/schema@0.66.3)(effect@3.0.3)
   '@effect/platform':
-    specifier: 0.49.0
-    version: 0.49.0(@effect/schema@0.66.0)(effect@3.0.0)(ws@8.16.0)
+    specifier: 0.50.0
+    version: 0.50.0(@effect/schema@0.66.3)(effect@3.0.3)(ws@8.16.0)
   '@effect/platform-node':
-    specifier: 0.46.0
-    version: 0.46.0(@effect/platform@0.49.0)(effect@3.0.0)
+    specifier: 0.47.0
+    version: 0.47.0(@effect/platform@0.50.0)(effect@3.0.3)
   '@effect/schema':
-    specifier: 0.66.0
-    version: 0.66.0(effect@3.0.0)(fast-check@3.17.0)
+    specifier: 0.66.3
+    version: 0.66.3(effect@3.0.3)(fast-check@3.17.0)
   effect:
-    specifier: 3.0.0
-    version: 3.0.0
+    specifier: 3.0.3
+    version: 3.0.3
+  ts-pattern:
+    specifier: 5.1.1
+    version: 5.1.1
 
 devDependencies:
   '@effect/vitest':
     specifier: 0.3.0
-    version: 0.3.0(effect@3.0.0)(vitest@1.4.0)
+    version: 0.3.0(effect@3.0.3)(vitest@1.4.0)
   '@types/node':
     specifier: 20.12.7
     version: 20.12.7
@@ -38,54 +41,54 @@ devDependencies:
     specifier: 4.4.0
     version: 4.4.0
   typescript:
-    specifier: 5.4.3
-    version: 5.4.3
+    specifier: 5.4.5
+    version: 5.4.5
   vitest:
     specifier: 1.4.0
     version: 1.4.0(@types/node@20.12.7)
 
 packages:
 
-  /@effect/cli@0.36.0(@effect/platform@0.49.0)(@effect/printer-ansi@0.33.0)(@effect/printer@0.33.0)(@effect/schema@0.66.0)(effect@3.0.0):
-    resolution: {integrity: sha512-TC/B9f32YnoUcBmJ4ok7/YqUDK6hp0e8JehdHd2lOm/xm3jOHlGSFB4HxB2uO+pxVgnLnSh2ALXqWid7DJMM0A==}
+  /@effect/cli@0.36.5(@effect/platform@0.50.0)(@effect/printer-ansi@0.33.3)(@effect/printer@0.33.3)(@effect/schema@0.66.3)(effect@3.0.3):
+    resolution: {integrity: sha512-BVitEafCUZM+S74Neqrvp7K5J32GArkUACyGy0oF4Rxn3gSxDc+PfFXLTtiepvh1S31h78P+g0P7WEzDldwz2Q==}
     peerDependencies:
-      '@effect/platform': ^0.49.0
-      '@effect/printer': ^0.33.0
-      '@effect/printer-ansi': ^0.33.0
-      '@effect/schema': ^0.66.0
-      effect: ^3.0.0
+      '@effect/platform': ^0.50.0
+      '@effect/printer': ^0.33.3
+      '@effect/printer-ansi': ^0.33.3
+      '@effect/schema': ^0.66.3
+      effect: ^3.0.3
     dependencies:
-      '@effect/platform': 0.49.0(@effect/schema@0.66.0)(effect@3.0.0)(ws@8.16.0)
-      '@effect/printer': 0.33.0(@effect/typeclass@0.24.0)(effect@3.0.0)
-      '@effect/printer-ansi': 0.33.0(@effect/typeclass@0.24.0)(effect@3.0.0)
-      '@effect/schema': 0.66.0(effect@3.0.0)(fast-check@3.17.0)
-      effect: 3.0.0
+      '@effect/platform': 0.50.0(@effect/schema@0.66.3)(effect@3.0.3)(ws@8.16.0)
+      '@effect/printer': 0.33.3(@effect/typeclass@0.24.3)(effect@3.0.3)
+      '@effect/printer-ansi': 0.33.3(@effect/typeclass@0.24.3)(effect@3.0.3)
+      '@effect/schema': 0.66.3(effect@3.0.3)(fast-check@3.17.0)
+      effect: 3.0.3
       ini: 4.1.2
       toml: 3.0.0
       yaml: 2.4.1
     dev: false
 
-  /@effect/platform-node-shared@0.4.0(@effect/platform@0.49.0)(effect@3.0.0):
-    resolution: {integrity: sha512-7wmIXeZU3l+rqlT3Lbco8NYUAuAU8mVlSXlk6CII76WUlBOGJ0YWRUc/E1NrYJHkE2nR1Ew8V51FTEivgTGOzQ==}
+  /@effect/platform-node-shared@0.4.5(@effect/platform@0.50.0)(effect@3.0.3):
+    resolution: {integrity: sha512-/A8tgiZCVwLASvBUBz9EmqHjxGy/Z0aLS4CgKiKLO94WQtmHPOta/UX+SlFY2iIRI0RWRPqmft7mJMVxA8U0Iw==}
     peerDependencies:
-      '@effect/platform': ^0.49.0
-      effect: ^3.0.0
+      '@effect/platform': ^0.50.0
+      effect: ^3.0.3
     dependencies:
-      '@effect/platform': 0.49.0(@effect/schema@0.66.0)(effect@3.0.0)(ws@8.16.0)
+      '@effect/platform': 0.50.0(@effect/schema@0.66.3)(effect@3.0.3)(ws@8.16.0)
       '@parcel/watcher': 2.4.1
-      effect: 3.0.0
+      effect: 3.0.3
       multipasta: 0.2.0
     dev: false
 
-  /@effect/platform-node@0.46.0(@effect/platform@0.49.0)(effect@3.0.0):
-    resolution: {integrity: sha512-ZB7QCw0EwC3vV85QGInLXBcTzHLBac1Kb2S7gly7hU4UyWQkibfzHWjWGSnH9QyE4Sara+ldOMwyWV4JQt2WWQ==}
+  /@effect/platform-node@0.47.0(@effect/platform@0.50.0)(effect@3.0.3):
+    resolution: {integrity: sha512-2hD0CyN/DT0R/ajg9qJchUNiMYq3/+c6qjfkKr2P3f/nM2zACszJc73Q15PdMojybY9jyYGY0zGGlqx0LKDBWg==}
     peerDependencies:
-      '@effect/platform': ^0.49.0
-      effect: ^3.0.0
+      '@effect/platform': ^0.50.0
+      effect: ^3.0.3
     dependencies:
-      '@effect/platform': 0.49.0(@effect/schema@0.66.0)(effect@3.0.0)(ws@8.16.0)
-      '@effect/platform-node-shared': 0.4.0(@effect/platform@0.49.0)(effect@3.0.0)
-      effect: 3.0.0
+      '@effect/platform': 0.50.0(@effect/schema@0.66.3)(effect@3.0.3)(ws@8.16.0)
+      '@effect/platform-node-shared': 0.4.5(@effect/platform@0.50.0)(effect@3.0.3)
+      effect: 3.0.3
       mime: 3.0.0
       undici: 6.13.0
       ws: 8.16.0
@@ -94,14 +97,14 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@effect/platform@0.49.0(@effect/schema@0.66.0)(effect@3.0.0)(ws@8.16.0):
-    resolution: {integrity: sha512-FhVe/eUwVREp8bD6oFApj0srbmUAE3If9EnvCfJLFBxiKcCU+HoFJ3VHDoAb7bRjrg4mAfiqCF3ghGxhY6omFQ==}
+  /@effect/platform@0.50.0(@effect/schema@0.66.3)(effect@3.0.3)(ws@8.16.0):
+    resolution: {integrity: sha512-yTQfFh9ni6fhc+aEQLTXAx9LBnj5unwH25fR88dUo0kLZL0biGYUVgGFGSZMpQRoJ5BTKD/YSzocMJ36NFNirQ==}
     peerDependencies:
-      '@effect/schema': ^0.66.0
-      effect: ^3.0.0
+      '@effect/schema': ^0.66.3
+      effect: ^3.0.3
     dependencies:
-      '@effect/schema': 0.66.0(effect@3.0.0)(fast-check@3.17.0)
-      effect: 3.0.0
+      '@effect/schema': 0.66.3(effect@3.0.3)(fast-check@3.17.0)
+      effect: 3.0.3
       find-my-way-ts: 0.1.1
       isows: 1.0.4(ws@8.16.0)
       multipasta: 0.2.0
@@ -110,52 +113,52 @@ packages:
       - ws
     dev: false
 
-  /@effect/printer-ansi@0.33.0(@effect/typeclass@0.24.0)(effect@3.0.0):
-    resolution: {integrity: sha512-czM0r5kaUnUJ3RocmGID7Mlm2qIvvKlplSVCXVMf+NeOA92cZHhQiJKKW+207hcr4KI5IFsFsw8c83Aui9vgoQ==}
+  /@effect/printer-ansi@0.33.3(@effect/typeclass@0.24.3)(effect@3.0.3):
+    resolution: {integrity: sha512-PIpLAOmoedt1fmsMWb7SUD8qqgJ+9NNlSMV0szT7yGCTeHvGbNXC31/yS2IuwjuQy3NNQRzeoxzVS4gpztMnfQ==}
     peerDependencies:
-      '@effect/typeclass': ^0.24.0
-      effect: ^3.0.0
+      '@effect/typeclass': ^0.24.3
+      effect: ^3.0.3
     dependencies:
-      '@effect/printer': 0.33.0(@effect/typeclass@0.24.0)(effect@3.0.0)
-      '@effect/typeclass': 0.24.0(effect@3.0.0)
-      effect: 3.0.0
+      '@effect/printer': 0.33.3(@effect/typeclass@0.24.3)(effect@3.0.3)
+      '@effect/typeclass': 0.24.3(effect@3.0.3)
+      effect: 3.0.3
     dev: false
 
-  /@effect/printer@0.33.0(@effect/typeclass@0.24.0)(effect@3.0.0):
-    resolution: {integrity: sha512-a0flTdViKlbLcZ7pA2Ys19xszFETamadsF2EMYelHquVpM8HIwlKInhHJ3yl4DCEOqfOuZZ5Dw+TxahezO8yuQ==}
+  /@effect/printer@0.33.3(@effect/typeclass@0.24.3)(effect@3.0.3):
+    resolution: {integrity: sha512-fY0THoDrRT0J/Br3HPMOzv15xGvweG13IH+pEi9j49BSI9dFPqw5N3ethN3bw77d6fMwxxoLqmE2Py5MaO4ivw==}
     peerDependencies:
-      '@effect/typeclass': ^0.24.0
-      effect: ^3.0.0
+      '@effect/typeclass': ^0.24.3
+      effect: ^3.0.3
     dependencies:
-      '@effect/typeclass': 0.24.0(effect@3.0.0)
-      effect: 3.0.0
+      '@effect/typeclass': 0.24.3(effect@3.0.3)
+      effect: 3.0.3
     dev: false
 
-  /@effect/schema@0.66.0(effect@3.0.0)(fast-check@3.17.0):
-    resolution: {integrity: sha512-wbmA4vQ0OswEwBt+vWn4oEgw2QdEDchPiNNisPCHvSy5e5qH0usfppJ3fNX9cwrCz6jEQTCE42Q/7Was2BhVHg==}
+  /@effect/schema@0.66.3(effect@3.0.3)(fast-check@3.17.0):
+    resolution: {integrity: sha512-b4rhUmwFWvuzRNLOPvCdk9QFdGouBKQ5u23GAthQWxhZLSGLkzTm6OSI3rzqL+fCVr4+oWK2kgotG+RWTX2R4A==}
     peerDependencies:
-      effect: ^3.0.0
+      effect: ^3.0.3
       fast-check: ^3.13.2
     dependencies:
-      effect: 3.0.0
+      effect: 3.0.3
       fast-check: 3.17.0
     dev: false
 
-  /@effect/typeclass@0.24.0(effect@3.0.0):
-    resolution: {integrity: sha512-sxazaIWxi0JETiy9rElEO7WvV1v49EpwHPDfOUEL6YFhcy6eFD8C9pMjXoA5HWJb/yjNZvR+pJ5jD/vMhoYflA==}
+  /@effect/typeclass@0.24.3(effect@3.0.3):
+    resolution: {integrity: sha512-fULQfF/lbNroUHu+1DUBVqYjRaS6qq5nSM5fHuK+3hTFfCPZy1CFKqlpjw2mxsGcwKaL7ettT9mwOb4ldzT7QQ==}
     peerDependencies:
-      effect: ^3.0.0
+      effect: ^3.0.3
     dependencies:
-      effect: 3.0.0
+      effect: 3.0.3
     dev: false
 
-  /@effect/vitest@0.3.0(effect@3.0.0)(vitest@1.4.0):
+  /@effect/vitest@0.3.0(effect@3.0.3)(vitest@1.4.0):
     resolution: {integrity: sha512-UxD8Rv+nUlS4vywmqjwSJjeIkMG1xOYEAFLVR5kqWJPSSIFTVA6upzSRmwAILRObLu+l5xfJpeUr4yWevnuK6w==}
     peerDependencies:
       effect: ^3.0.0
       vitest: ^1.4.0
     dependencies:
-      effect: 3.0.0
+      effect: 3.0.3
       vitest: 1.4.0(@types/node@20.12.7)
     dev: true
 
@@ -953,8 +956,8 @@ packages:
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
     dev: true
 
-  /effect@3.0.0:
-    resolution: {integrity: sha512-8yVxuahojpD8Y6ynrvIlSWD2xsea/PyGnjA4V5c7v0fOMJafgsKUNUHErBAr6YoPikmtOfR9zqNWRd9u5QaWEQ==}
+  /effect@3.0.3:
+    resolution: {integrity: sha512-mgG+FoWrM4sny8OxDFWCpq+6LwGf9cK/JztVhxZQeZM9ZMXY+lKbdMEQmemNYce0QVAz2+YqUKwhKzOidwbZzg==}
 
   /esbuild@0.18.20:
     resolution: {integrity: sha512-ceqxoedUrcayh7Y7ZX6NdbbDzGROiyVBgC4PriJThBKSVPWnnFHZAkfI1lJT8QFkOwH4qOS2SJkS4wvpGl8BpA==}
@@ -1402,6 +1405,10 @@ packages:
     resolution: {integrity: sha512-y/mWCZinnvxjTKYhJ+pYxwD0mRLVvOtdS2Awbgxln6iEnt4rk0yBxeSBHkGJcPucRiG0e55mwWp+g/05rsrd6w==}
     dev: false
 
+  /ts-pattern@5.1.1:
+    resolution: {integrity: sha512-i+owkHr5RYdQxj8olUgRrqpiWH9x27PuWVfXwDmJ/n/CoF/SAa7WW1i2oUpPDMQpJ4U+bGRUcZkVq7i1m3zFCg==}
+    dev: false
+
   /tsx@4.4.0:
     resolution: {integrity: sha512-4fwcEjRUxW20ciSaMB8zkpGwCPxuRGnadDuj/pBk5S9uT29zvWz15PK36GrKJo45mSJomDxVejZ73c6lr3811Q==}
     engines: {node: '>=18.0.0'}
@@ -1418,8 +1425,8 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /typescript@5.4.3:
-    resolution: {integrity: sha512-KrPd3PKaCLr78MalgiwJnA25Nm8HAmdwN3mYUYZgG/wizIo9EainNVQI9/yDavtVFRN2h3k8uf3GLHuhDMgEHg==}
+  /typescript@5.4.5:
+    resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
     engines: {node: '>=14.17'}
     hasBin: true
     dev: true
