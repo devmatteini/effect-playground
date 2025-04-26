@@ -7,7 +7,8 @@ const everyMinute = Cron.unsafeParse("* * * * *")
 const main = Effect.gen(function* () {
     yield* Effect.log("Initializing program")
 
-    const backgroundJobs = yield* Effect.fork(
+    // Creates a long-running background fiber that is independent of its parent
+    yield* Effect.forkDaemon(
         pipe(
             // keep new line
             Effect.logInfo("Running every minute"),
@@ -15,7 +16,7 @@ const main = Effect.gen(function* () {
         ),
     )
 
-    yield* Fiber.join(backgroundJobs)
+    yield* Effect.logInfo("Program done")
 })
 
 Effect.runPromise(main).catch((e) => {
