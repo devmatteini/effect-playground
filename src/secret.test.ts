@@ -1,6 +1,6 @@
 import { expect, test } from "vitest"
 import * as Redacted from "effect/Redacted"
-import * as Schema from "@effect/schema/Schema"
+import * as Schema from "effect/Schema"
 
 const User = Schema.Struct({
     Id: Schema.String,

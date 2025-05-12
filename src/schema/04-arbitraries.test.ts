@@ -1,7 +1,7 @@
 import { expect, test } from "vitest"
-import * as S from "@effect/schema/Schema"
-import * as Arbitrary from "@effect/schema/Arbitrary"
-import * as FastCheck from "@effect/schema/FastCheck"
+import * as S from "effect/Schema"
+import * as Arbitrary from "effect/Arbitrary"
+import * as FastCheck from "effect/FastCheck"
 import * as F from "effect/Function"
 
 const Person = S.Struct({

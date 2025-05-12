@@ -1,5 +1,5 @@
 import * as Effect from "effect/Effect"
-import * as S from "@effect/schema/Schema"
+import * as S from "effect/Schema"
 
 namespace basic {
     const Person = S.Struct({

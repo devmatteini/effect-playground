@@ -1,6 +1,6 @@
 import { expect, test, describe } from "vitest"
-import * as S from "@effect/schema/Schema"
-import * as AST from "@effect/schema/AST"
+import * as S from "effect/Schema"
+import * as AST from "effect/SchemaAST"
 import * as Effect from "effect/Effect"
 import * as EV from "@effect/vitest"
 import * as E from "effect/Either"

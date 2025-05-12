@@ -1,13 +1,12 @@
-import { expect, test, describe } from "vitest"
-import * as S from "@effect/schema/Schema"
-import * as Equivalence from "@effect/schema/Equivalence"
+import { expect, test } from "vitest"
+import * as S from "effect/Schema"
 
 const Person = S.Struct({
     name: S.String,
     age: S.NumberFromString,
 })
 
-const PersonEquivalence = Equivalence.make(Person)
+const PersonEquivalence = S.equivalence(Person)
 
 test("same person", () => {
     const john = { name: "John", age: 23 }
@@ -29,7 +28,7 @@ test("different persons", () => {
 const Floor = S.String.annotations({
     equivalence: () => (a, b) => a.at(0) === b.at(0),
 })
-const FloorEquivalence = Equivalence.make(Floor)
+const FloorEquivalence = S.equivalence(Floor)
 
 test("custom equivalence", () => {
     const firstFloorSectionA = "1A"

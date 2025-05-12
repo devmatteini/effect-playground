@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import * as Schema from "@effect/schema/Schema"
+import * as Schema from "effect/Schema"
 import * as F from "effect/Function"
 import * as Match from "effect/Match"
 import * as O from "effect/Option"
