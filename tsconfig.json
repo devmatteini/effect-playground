@@ -1,18 +1,23 @@
 {
-    "$schema": "https://json.schemastore.org/tsconfig",
-    "compilerOptions": {
-        "lib": [
-            "ES2023"
-        ],
-        "module": "Node16",
-        "target": "ES2022",
-        "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "moduleResolution": "Node16"
-    },
-    "include": [
-        "src/**/*.ts"
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "lib": [
+      "ES2023"
+    ],
+    "module": "Node16",
+    "target": "ES2022",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "Node16",
+    "plugins": [
+      {
+        "name": "@effect/language-service"
+      }
     ]
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
 }
