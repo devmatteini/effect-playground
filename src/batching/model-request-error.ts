@@ -4,10 +4,13 @@ import * as Effect from "effect/Effect"
 import * as Request from "effect/Request"
 import * as F from "effect/Function"
 import * as Context from "effect/Context"
+import * as Data from "effect/Data"
 
 type InsertManyResult = {
     insertedIds: string[]
 }
+
+export class RepositoryError extends Data.TaggedError("RepositoryError")<{ message: string }> {}
 
 export type Model = {
     id: string
@@ -15,12 +18,12 @@ export type Model = {
 }
 
 export type RepositoryService = {
-    insertMany: (items: Model[]) => Effect.Effect<InsertManyResult>
+    insertMany: (items: Model[]) => Effect.Effect<InsertManyResult, RepositoryError>
 }
 
 export class Repository extends Context.Tag("Repository")<Repository, RepositoryService>() {}
 
-class SaveModelRequest extends Request.TaggedClass("SaveModelRequest")<void, never, { model: Model }> {}
+class SaveModelRequest extends Request.TaggedClass("SaveModelRequest")<void, RepositoryError, { model: Model }> {}
 
 const saveModel = (ctx: Context.Context<Repository>) => (model: Model) =>
     Effect.request(
@@ -47,9 +50,8 @@ const succeedIfIdIsIn = (insertedIds: readonly string[]) => (request: SaveModelR
             request.model.id,
             Effect.liftPredicate(
                 (id) => insertedIds.includes(id),
-                () => new Error(`Failed to insert model`),
+                () => new RepositoryError({ message: `Failed to insert model ${request.model.id}` }),
             ),
-            Effect.orDie,
             Effect.asVoid,
         ),
     )
