@@ -24,7 +24,7 @@ test("generate arbitrary Schema.Encoded", () => {
     const result = FastCheck.sample(PersonArbitraryEncoded, 1)
 
     expect(result).toHaveLength(1)
-    expect(result[0].age).toBeTypeOf("string")
+    expect(result[0]?.age).toBeTypeOf("string")
 })
 
 // NOTE: order of `pipe` matters.
