@@ -22,11 +22,11 @@ export class Repository extends Context.Tag("Repository")<Repository, Repository
 
 class SaveModelRequest extends Request.TaggedClass("SaveModelRequest")<void, never, { model: Model }> {}
 
-const saveModel = (ctx: Context.Context<Repository>) => (model: Model) =>
+const saveModel = (model: Model) =>
     Effect.request(
         // keep new line
         new SaveModelRequest({ model }),
-        SaveModelResolver.pipe(RequestResolver.provideContext(ctx)),
+        SaveModelResolver.pipe(RequestResolver.contextFromServices(Repository)),
     )
 
 const SaveModelResolver = RequestResolver.makeBatched((requests: Array.NonEmptyArray<SaveModelRequest>) =>
@@ -56,8 +56,5 @@ const succeedIfIdIsIn = (insertedIds: readonly string[]) => (request: SaveModelR
 
 export const saveModels = (models: readonly Model[]) =>
     Effect.gen(function* () {
-        const ctx = yield* Effect.context<Repository>()
-        const save = saveModel(ctx)
-
-        yield* Effect.forEach(models, (model) => save(model), { batching: true })
+        yield* Effect.forEach(models, (model) => saveModel(model), { batching: true })
     })
