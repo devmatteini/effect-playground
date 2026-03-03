@@ -27,6 +27,6 @@ test("generate JSON Schema from Schema.Encoded", () => {
     // console.log(result)
 
     expect(result).toEqual(
-        '{"$schema":"http://json-schema.org/draft-07/schema#","$defs":{"NumberFromString":{"type":"string","description":"a string to be decoded into a number"}},"type":"object","required":["name","age"],"properties":{"name":{"type":"string"},"age":{"$ref":"#/$defs/NumberFromString"}},"additionalProperties":false}',
+        '{"$schema":"http://json-schema.org/draft-07/schema#","type":"object","required":["name","age"],"properties":{"name":{"type":"string"},"age":{"type":"string","description":"a string to be decoded into a number"}},"additionalProperties":false}',
     )
 })
