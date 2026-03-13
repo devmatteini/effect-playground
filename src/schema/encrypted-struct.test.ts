@@ -17,8 +17,8 @@ type DataKey = {
 class KeyManager extends Context.Tag("KeyManager")<
     KeyManager,
     {
-        generateDataKey: Effect.Effect<DataKey>
-        decryptDataKey: (key: Buffer, keyId: string) => Effect.Effect<Buffer>
+        generateDataKey: Effect.Effect<DataKey, KeyManagerError>
+        decryptDataKey: (key: Buffer, keyId: string) => Effect.Effect<Buffer, KeyManagerError>
     }
 >() {}
 
@@ -44,6 +44,14 @@ const EncryptedPayload = Schema.TaggedStruct("AES_256_GCM", {
 type EncryptedPayload = typeof EncryptedPayload.Type
 
 const EncryptedPayloadFromJson = Schema.parseJson(EncryptedPayload)
+
+class KeyManagerError extends Data.TaggedError("KeyManagerError")<{
+    cause?: unknown
+}> {
+    toString(): string {
+        return `KeyManagerError: ${this.cause instanceof Error ? this.cause.toString() : String(this.cause)}`
+    }
+}
 
 class CryptoError extends Data.TaggedError("CryptoError")<{
     cause?: unknown
@@ -88,6 +96,9 @@ const EncryptedUserSession = Schema.transformOrFail(
                     encryptedData: encryptedData.toString("base64"),
                 })
             }).pipe(
+                Effect.catchTag("KeyManagerError", (e) =>
+                    Effect.fail(new ParseResult.Unexpected(undefined, e.toString())),
+                ),
                 Effect.catchTag("CryptoError", (e) => Effect.fail(new ParseResult.Unexpected(undefined, e.toString()))),
                 Effect.catchTag("ParseError", (e) =>
                     Effect.fail(new ParseResult.Unexpected(undefined, TreeFormatter.formatErrorSync(e))),
@@ -113,6 +124,9 @@ const EncryptedUserSession = Schema.transformOrFail(
 
                 return yield* decodeUserSession(payload)
             }).pipe(
+                Effect.catchTag("KeyManagerError", (e) =>
+                    Effect.fail(new ParseResult.Unexpected(undefined, e.toString())),
+                ),
                 Effect.catchTag("CryptoError", (e) => Effect.fail(new ParseResult.Unexpected(undefined, e.toString()))),
                 Effect.catchTag("ParseError", (e) =>
                     Effect.fail(new ParseResult.Unexpected(undefined, TreeFormatter.formatErrorSync(e))),
@@ -151,8 +165,14 @@ const masterKeys = {
 } as const
 type MasterKey = keyof typeof masterKeys
 
+const useKeyManager = <A>(f: () => A) =>
+    Effect.try({
+        try: () => f(),
+        catch: (cause) => new KeyManagerError({ cause }),
+    })
+
 const InMemoryKeyManagerTest = Layer.succeed(KeyManager, {
-    generateDataKey: Effect.sync(() => {
+    generateDataKey: useKeyManager(() => {
         const latestKey = FIRST_KEY
         const dataKey = crypto.randomBytes(32)
         const iv = crypto.randomBytes(12)
@@ -163,7 +183,7 @@ const InMemoryKeyManagerTest = Layer.succeed(KeyManager, {
         return { plainText: dataKey, encrypted: ciphertextBlob, keyId: latestKey }
     }),
     decryptDataKey: (ciphertextBlob, keyId) =>
-        Effect.sync(() => {
+        useKeyManager(() => {
             const iv = ciphertextBlob.subarray(0, 12)
             const authTag = ciphertextBlob.subarray(12, 28)
             const encrypted = ciphertextBlob.subarray(28)
