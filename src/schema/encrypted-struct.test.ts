@@ -70,16 +70,15 @@ const EncryptedUserSession = Schema.transformOrFail(
                 const keyManager = yield* KeyManager
 
                 const dataKey = yield* keyManager.generateDataKey
-
-                // TODO: single useCrypto for all unsafe operations
-                const iv = crypto.randomBytes(12)
-                const cipher = yield* useCrypto(() => crypto.createCipheriv("aes-256-gcm", dataKey.plainText, iv))
-
                 const payload = yield* encodeUserSession(userSession)
-                const encryptedData = yield* useCrypto(() =>
-                    Buffer.concat([cipher.update(payload, "utf8"), cipher.final()]),
-                )
-                const authTag = cipher.getAuthTag()
+
+                const { iv, encryptedData, authTag } = yield* useCrypto(() => {
+                    const iv = crypto.randomBytes(12)
+                    const cipher = crypto.createCipheriv("aes-256-gcm", dataKey.plainText, iv)
+                    const encryptedData = Buffer.concat([cipher.update(payload, "utf8"), cipher.final()])
+                    const authTag = cipher.getAuthTag()
+                    return { iv, encryptedData, authTag }
+                })
 
                 return EncryptedPayload.make({
                     encryptedKey: dataKey.encrypted.toString("base64"),
@@ -105,14 +104,11 @@ const EncryptedUserSession = Schema.transformOrFail(
 
                 const decryptKey = yield* keyManager.decryptDataKey(encryptedDataKey, input.keyId)
 
-                // TODO: single useCrypto for all unsafe operations
-                const decipher = yield* useCrypto(() => crypto.createDecipheriv("aes-256-gcm", decryptKey, iv))
-
-                yield* useCrypto(() => decipher.setAuthTag(authTag))
-
-                const decrypted = yield* useCrypto(() =>
-                    Buffer.concat([decipher.update(encryptedPayload), decipher.final()]),
-                )
+                const decrypted = yield* useCrypto(() => {
+                    const decipher = crypto.createDecipheriv("aes-256-gcm", decryptKey, iv)
+                    decipher.setAuthTag(authTag)
+                    return Buffer.concat([decipher.update(encryptedPayload), decipher.final()])
+                })
                 const payload = decrypted.toString("utf8")
 
                 return yield* decodeUserSession(payload)
