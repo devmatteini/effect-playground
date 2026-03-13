@@ -14,11 +14,11 @@ type DataKey = {
     keyId: string
 }
 
-class KeyManager extends Context.Tag("KeyManager")<
-    KeyManager,
+class KeyVault extends Context.Tag("KeyVault")<
+    KeyVault,
     {
-        generateDataKey: Effect.Effect<DataKey, KeyManagerError>
-        decryptDataKey: (key: Buffer, keyId: string) => Effect.Effect<Buffer, KeyManagerError>
+        generateDataKey: Effect.Effect<DataKey, KeyVaultError>
+        decryptDataKey: (key: Buffer, keyId: string) => Effect.Effect<Buffer, KeyVaultError>
     }
 >() {}
 
@@ -45,11 +45,11 @@ type EncryptedPayload = typeof EncryptedPayload.Type
 
 const EncryptedPayloadFromJson = Schema.parseJson(EncryptedPayload)
 
-class KeyManagerError extends Data.TaggedError("KeyManagerError")<{
+class KeyVaultError extends Data.TaggedError("KeyVaultError")<{
     cause?: unknown
 }> {
     toString(): string {
-        return `KeyManagerError: ${this.cause instanceof Error ? this.cause.toString() : String(this.cause)}`
+        return `KeyVaultError: ${this.cause instanceof Error ? this.cause.toString() : String(this.cause)}`
     }
 }
 
@@ -75,9 +75,9 @@ const EncryptedUserSession = Schema.transformOrFail(
         strict: true,
         encode: (userSession) =>
             Effect.gen(function* () {
-                const keyManager = yield* KeyManager
+                const keyVault = yield* KeyVault
 
-                const dataKey = yield* keyManager.generateDataKey
+                const dataKey = yield* keyVault.generateDataKey
                 const payload = yield* encodeUserSession(userSession)
 
                 const { iv, encryptedData, authTag } = yield* useCrypto(() => {
@@ -96,7 +96,7 @@ const EncryptedUserSession = Schema.transformOrFail(
                     encryptedData: encryptedData.toString("base64"),
                 })
             }).pipe(
-                Effect.catchTag("KeyManagerError", (e) =>
+                Effect.catchTag("KeyVaultError", (e) =>
                     Effect.fail(new ParseResult.Unexpected(undefined, e.toString())),
                 ),
                 Effect.catchTag("CryptoError", (e) => Effect.fail(new ParseResult.Unexpected(undefined, e.toString()))),
@@ -106,14 +106,14 @@ const EncryptedUserSession = Schema.transformOrFail(
             ),
         decode: (input) =>
             Effect.gen(function* () {
-                const keyManager = yield* KeyManager
+                const keyVault = yield* KeyVault
 
                 const encryptedPayload = Buffer.from(input.encryptedData, "base64")
                 const encryptedDataKey = Buffer.from(input.encryptedKey, "base64")
                 const iv = Buffer.from(input.iv, "base64")
                 const authTag = Buffer.from(input.authTag, "base64")
 
-                const decryptKey = yield* keyManager.decryptDataKey(encryptedDataKey, input.keyId)
+                const decryptKey = yield* keyVault.decryptDataKey(encryptedDataKey, input.keyId)
 
                 const decrypted = yield* useCrypto(() => {
                     const decipher = crypto.createDecipheriv("aes-256-gcm", decryptKey, iv)
@@ -124,7 +124,7 @@ const EncryptedUserSession = Schema.transformOrFail(
 
                 return yield* decodeUserSession(payload)
             }).pipe(
-                Effect.catchTag("KeyManagerError", (e) =>
+                Effect.catchTag("KeyVaultError", (e) =>
                     Effect.fail(new ParseResult.Unexpected(undefined, e.toString())),
                 ),
                 Effect.catchTag("CryptoError", (e) => Effect.fail(new ParseResult.Unexpected(undefined, e.toString()))),
@@ -143,7 +143,7 @@ const decode = Schema.decode(EncryptedUserSession)
 // ------------ TEST ------------
 
 test("encode and decode user session", async () => {
-    const program = encode(testUserSession).pipe(Effect.flatMap(decode), Effect.provide(InMemoryKeyManagerTest))
+    const program = encode(testUserSession).pipe(Effect.flatMap(decode), Effect.provide(InMemoryKeyVaultTest))
 
     const result = await Effect.runPromise(program)
 
@@ -165,14 +165,14 @@ const masterKeys = {
 } as const
 type MasterKey = keyof typeof masterKeys
 
-const useKeyManager = <A>(f: () => A) =>
+const useKeyVault = <A>(f: () => A) =>
     Effect.try({
         try: () => f(),
-        catch: (cause) => new KeyManagerError({ cause }),
+        catch: (cause) => new KeyVaultError({ cause }),
     })
 
-const InMemoryKeyManagerTest = Layer.succeed(KeyManager, {
-    generateDataKey: useKeyManager(() => {
+const InMemoryKeyVaultTest = Layer.succeed(KeyVault, {
+    generateDataKey: useKeyVault(() => {
         const latestKey = FIRST_KEY
         const dataKey = crypto.randomBytes(32)
         const iv = crypto.randomBytes(12)
@@ -183,7 +183,7 @@ const InMemoryKeyManagerTest = Layer.succeed(KeyManager, {
         return { plainText: dataKey, encrypted: ciphertextBlob, keyId: latestKey }
     }),
     decryptDataKey: (ciphertextBlob, keyId) =>
-        useKeyManager(() => {
+        useKeyVault(() => {
             const iv = ciphertextBlob.subarray(0, 12)
             const authTag = ciphertextBlob.subarray(12, 28)
             const encrypted = ciphertextBlob.subarray(28)
