@@ -11,13 +11,14 @@ import * as Data from "effect/Data"
 type DataKey = {
     plainText: Buffer
     encrypted: Buffer
+    keyId: string
 }
 
 class KeyManager extends Context.Tag("KeyManager")<
     KeyManager,
     {
         generateDataKey: Effect.Effect<DataKey>
-        decryptDataKey: (key: Buffer) => Effect.Effect<Buffer>
+        decryptDataKey: (key: Buffer, keyId: string) => Effect.Effect<Buffer>
     }
 >() {}
 
@@ -33,10 +34,11 @@ const UserSessionFromJson = Schema.parseJson(UserSession)
 const encodeUserSession = Schema.encode(UserSessionFromJson)
 const decodeUserSession = Schema.decode(UserSessionFromJson)
 
-const EncryptedPayload = Schema.Struct({
+const EncryptedPayload = Schema.TaggedStruct("AES_256_GCM", {
     encryptedKey: Schema.String,
     iv: Schema.String,
     authTag: Schema.String,
+    keyId: Schema.String,
     encryptedData: Schema.String,
 })
 type EncryptedPayload = typeof EncryptedPayload.Type
@@ -62,12 +64,14 @@ const EncryptedUserSession = Schema.transformOrFail(
     EncryptedPayloadFromJson,
     UserSession,
     {
+        strict: true,
         encode: (userSession) =>
             Effect.gen(function* () {
                 const keyManager = yield* KeyManager
 
                 const dataKey = yield* keyManager.generateDataKey
 
+                // TODO: single useCrypto for all unsafe operations
                 const iv = crypto.randomBytes(12)
                 const cipher = yield* useCrypto(() => crypto.createCipheriv("aes-256-gcm", dataKey.plainText, iv))
 
@@ -77,12 +81,13 @@ const EncryptedUserSession = Schema.transformOrFail(
                 )
                 const authTag = cipher.getAuthTag()
 
-                return {
+                return EncryptedPayload.make({
                     encryptedKey: dataKey.encrypted.toString("base64"),
+                    keyId: dataKey.keyId,
                     iv: iv.toString("base64"),
                     authTag: authTag.toString("base64"),
                     encryptedData: encryptedData.toString("base64"),
-                }
+                })
             }).pipe(
                 Effect.catchTag("CryptoError", (e) => Effect.fail(new ParseResult.Unexpected(undefined, e.toString()))),
                 Effect.catchTag("ParseError", (e) =>
@@ -98,8 +103,9 @@ const EncryptedUserSession = Schema.transformOrFail(
                 const iv = Buffer.from(input.iv, "base64")
                 const authTag = Buffer.from(input.authTag, "base64")
 
-                const decryptKey = yield* keyManager.decryptDataKey(encryptedDataKey)
+                const decryptKey = yield* keyManager.decryptDataKey(encryptedDataKey, input.keyId)
 
+                // TODO: single useCrypto for all unsafe operations
                 const decipher = yield* useCrypto(() => crypto.createDecipheriv("aes-256-gcm", decryptKey, iv))
 
                 yield* useCrypto(() => decipher.setAuthTag(authTag))
@@ -141,24 +147,33 @@ const testUserSession = UserSession.make({
     email: "info@example.com",
 })
 
-const STATIC_CUSTOMER_MASTER_KEY = Buffer.from("static-customer-master-key-tests")
+const FIRST_CUSTOMER_MASTER_KEY = "static-customer-master-key-tests"
+const FIRST_KEY = "FIRST_KEY"
+
+const masterKeys = {
+    [FIRST_KEY]: FIRST_CUSTOMER_MASTER_KEY,
+} as const
+type MasterKey = keyof typeof masterKeys
 
 const InMemoryKeyManagerTest = Layer.succeed(KeyManager, {
     generateDataKey: Effect.sync(() => {
+        const latestKey = FIRST_KEY
         const dataKey = crypto.randomBytes(32)
         const iv = crypto.randomBytes(12)
-        const cipher = crypto.createCipheriv("aes-256-gcm", STATIC_CUSTOMER_MASTER_KEY, iv)
+        const cipher = crypto.createCipheriv("aes-256-gcm", masterKeys[latestKey], iv)
         const encrypted = Buffer.concat([cipher.update(dataKey), cipher.final()])
         const authTag = cipher.getAuthTag()
         const ciphertextBlob = Buffer.concat([iv, authTag, encrypted])
-        return { plainText: dataKey, encrypted: ciphertextBlob }
+        return { plainText: dataKey, encrypted: ciphertextBlob, keyId: latestKey }
     }),
-    decryptDataKey: (ciphertextBlob) =>
+    decryptDataKey: (ciphertextBlob, keyId) =>
         Effect.sync(() => {
             const iv = ciphertextBlob.subarray(0, 12)
             const authTag = ciphertextBlob.subarray(12, 28)
             const encrypted = ciphertextBlob.subarray(28)
-            const decipher = crypto.createDecipheriv("aes-256-gcm", STATIC_CUSTOMER_MASTER_KEY, iv)
+            const kek = masterKeys[keyId as MasterKey]
+            if (!kek) throw new Error(`Cannot find master key for ${keyId}`)
+            const decipher = crypto.createDecipheriv("aes-256-gcm", kek, iv)
             decipher.setAuthTag(authTag)
             return Buffer.concat([decipher.update(encrypted), decipher.final()])
         }),
