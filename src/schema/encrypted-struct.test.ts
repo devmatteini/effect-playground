@@ -2,11 +2,11 @@ import * as Effect from "effect/Effect"
 import * as Context from "effect/Context"
 import * as Schema from "effect/Schema"
 import * as ParseResult from "effect/ParseResult"
-import { TreeFormatter } from "effect/ParseResult"
 import crypto from "node:crypto"
 import { expect, test } from "vitest"
 import * as Layer from "effect/Layer"
 import * as Data from "effect/Data"
+import * as Redacted from "effect/Redacted"
 
 type DataKey = {
     plainText: Buffer
@@ -26,13 +26,10 @@ const UserSession = Schema.Struct({
     id: Schema.String,
     name: Schema.String,
     lastName: Schema.String,
-    email: Schema.String,
+    email: Schema.Redacted(Schema.String),
 })
 type UserSession = typeof UserSession.Type
-
 const UserSessionFromJson = Schema.parseJson(UserSession)
-const encodeUserSession = Schema.encode(UserSessionFromJson)
-const decodeUserSession = Schema.decode(UserSessionFromJson)
 
 const EncryptedPayload = Schema.TaggedStruct("AES_256_GCM", {
     encryptedKey: Schema.String,
@@ -70,15 +67,14 @@ const useCrypto = <A>(f: () => A) =>
 const EncryptedUserSession = Schema.transformOrFail(
     // keep new line
     EncryptedPayloadFromJson,
-    UserSession,
+    UserSessionFromJson,
     {
         strict: true,
-        encode: (userSession) =>
+        encode: (payload) =>
             Effect.gen(function* () {
                 const keyVault = yield* KeyVault
 
                 const dataKey = yield* keyVault.generateDataKey
-                const payload = yield* encodeUserSession(userSession)
 
                 const { iv, encryptedData, authTag } = yield* useCrypto(() => {
                     const iv = crypto.randomBytes(12)
@@ -100,9 +96,6 @@ const EncryptedUserSession = Schema.transformOrFail(
                     Effect.fail(new ParseResult.Unexpected(undefined, e.toString())),
                 ),
                 Effect.catchTag("CryptoError", (e) => Effect.fail(new ParseResult.Unexpected(undefined, e.toString()))),
-                Effect.catchTag("ParseError", (e) =>
-                    Effect.fail(new ParseResult.Unexpected(undefined, TreeFormatter.formatErrorSync(e))),
-                ),
             ),
         decode: (input) =>
             Effect.gen(function* () {
@@ -120,17 +113,12 @@ const EncryptedUserSession = Schema.transformOrFail(
                     decipher.setAuthTag(authTag)
                     return Buffer.concat([decipher.update(encryptedPayload), decipher.final()])
                 })
-                const payload = decrypted.toString("utf8")
-
-                return yield* decodeUserSession(payload)
+                return decrypted.toString("utf8")
             }).pipe(
                 Effect.catchTag("KeyVaultError", (e) =>
                     Effect.fail(new ParseResult.Unexpected(undefined, e.toString())),
                 ),
                 Effect.catchTag("CryptoError", (e) => Effect.fail(new ParseResult.Unexpected(undefined, e.toString()))),
-                Effect.catchTag("ParseError", (e) =>
-                    Effect.fail(new ParseResult.Unexpected(undefined, TreeFormatter.formatErrorSync(e))),
-                ),
             ),
     },
 )
@@ -147,14 +135,20 @@ test("encode and decode user session", async () => {
 
     const result = await Effect.runPromise(program)
 
-    expect(result).toEqual(testUserSession)
+    expectRedactedEqual(result, testUserSession)
 })
+
+const expectRedactedEqual = <A extends Record<string, unknown>>(actual: A, expected: A) => {
+    const unwrap = (obj: A) =>
+        Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, Redacted.isRedacted(v) ? Redacted.value(v) : v]))
+    expect(unwrap(actual)).toEqual(unwrap(expected))
+}
 
 const testUserSession = UserSession.make({
     id: "123",
     name: "John",
     lastName: "Doe",
-    email: "info@example.com",
+    email: Redacted.make("info@example.com"),
 })
 
 const FIRST_CUSTOMER_MASTER_KEY = "static-customer-master-key-tests"
