@@ -2,10 +2,10 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "lib": [
-      "ES2023"
+      "ES2024"
     ],
-    "module": "Node16",
-    "target": "ES2022",
+    "module": "nodenext",
+    "target": "ES2024",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
