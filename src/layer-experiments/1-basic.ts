@@ -25,10 +25,7 @@ const load = (id: string): Effect.Effect<MyObject, never, Repository> =>
     F.pipe(
         Repository,
         Effect.flatMap(() =>
-            F.pipe(
-                Effect.logInfo(`Loaded object ${id}`),
-                Effect.zipRight(Effect.succeed({ id, version: 1 })),
-            ),
+            F.pipe(Effect.logInfo(`Loaded object ${id}`), Effect.zipRight(Effect.succeed({ id, version: 1 }))),
         ),
     )
 
