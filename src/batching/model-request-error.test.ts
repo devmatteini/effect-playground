@@ -1,5 +1,5 @@
 import { expect, test, vitest } from "vitest"
-import { Model, Repository, RepositoryError, RepositoryService, saveModels } from "./model-request-error"
+import { type Model, Repository, RepositoryError, type RepositoryService, saveModels } from "./model-request-error.ts"
 import * as Effect from "effect/Effect"
 import * as Layer from "effect/Layer"
 import * as F from "effect/Function"

@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "A collection of scripts to explore the Effect ecosystem",
     "author": "Cosimo Matteini",
+    "type": "module",
     "scripts": {
         "format": "prettier --write src/**/*.ts",
         "typecheck": "tsc --noEmit",
@@ -23,7 +24,6 @@
     "devDependencies": {
         "@types/node": "24.12.2",
         "typescript": "5.8.3",
-        "tsx": "4.19.4",
         "prettier": "3.8.1",
         "@effect/vitest": "0.29.0",
         "vite": "8.0.7",

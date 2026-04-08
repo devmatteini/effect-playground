@@ -1,7 +1,7 @@
-import * as Effect from "effect/Effect"
 import * as S from "effect/Schema"
 
-namespace basic {
+// basic schema
+{
     const Person = S.Struct({
         name: S.String,
         age: S.NumberFromString,
@@ -13,7 +13,8 @@ namespace basic {
     type PersonContext = S.Schema.Context<typeof Person>
 }
 
-namespace opaqueTypes {
+// opaque types
+{
     const _Person = S.Struct({
         name: S.String,
         age: S.NumberFromString,

@@ -16,6 +16,10 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noUncheckedIndexedAccess": true,
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
     "moduleResolution": "Node16",
     "plugins": [
       {
