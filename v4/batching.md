@@ -10,7 +10,7 @@ The language of this document follows ASD-STE100 Simplified Technical English.
 The tests that show this behavior are in these files:
 
 - v3: [`../v3/src/batching-concurrency.test.ts`](../v3/src/batching-concurrency.test.ts) (effect 3.21.0)
-- v4: [`src/batching-concurrency.test.ts`](src/batching-concurrency.test.ts) (effect 4.0.5)
+- v4: [`src/batching-concurrency.test.ts`](src/batching-concurrency.test.ts) (effect 4.1.2)
 
 Each test uses the same setup:
 

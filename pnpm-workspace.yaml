@@ -8,4 +8,7 @@ allowBuilds:
   msgpackr-extract: false
 
 minimumReleaseAge: 1440 # 1 day
+minimumReleaseAgeExclude:
+  - effect
+  - "@effect/*"
 trustPolicy: no-downgrade
